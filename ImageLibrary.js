@@ -30,11 +30,7 @@ class ImageLibrary extends Component {
     };
   }
 
-  async componentDidMount() {
-
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-
-    this.setState({ permissionGranted: status === 'granted' });
+  componentDidMount() {
 
     this._isMounted = true;
     this.getPhotos();

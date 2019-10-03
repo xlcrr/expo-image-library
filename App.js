@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ImageLibrary from './ImageLibrary';
-import * as Permissions from 'expo-permissions';
+import RootContainer from './RootContainer';
 
 export default function App() {
 
   return (
     <View style={styles.container}>
-      <ImageLibrary />
+      <RootContainer />
     </View>
   );
 }
