@@ -15,8 +15,10 @@ class RootContainer extends Component {
     };
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
+
+    console.log("Status", status);
 
     this.setState({ permissionGranted: status === 'granted' });
   }
