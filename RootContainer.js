@@ -16,11 +16,11 @@ class RootContainer extends Component {
   }
 
   async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-    console.log("Status", status);
-
-    this.setState({ permissionGranted: status === 'granted' });
+    if (status === "granted") {
+      this.setState({ permissionGranted: true });
+    }
   }
 
   render() {

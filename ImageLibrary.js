@@ -72,12 +72,16 @@ class ImageLibrary extends Component {
 
     let photos = [];
     for (var i = 0; i < promises.length; i++) {
+
+        let identity = a[i].id.substring(0, 36);
+        let fn = identity + ".png";
+
         photos.push({
           id: a[i].id, // "F719041D-8A97-4156-A2D9-E25C6CA263AC/L0/001",
           uri: a[i].uri, // "assets-library://asset/asset.JPG?id=F719041D-8A97-4156-A2D9-E25C6CA263AC&ext=JPG",
           file: a[i].localUri, // "file:///var/mobile/Media/DCIM/116APPLE/IMG_6677.JPG",
-          identity: identity,
-          unix: a[i].creationTime
+          unix: a[i].creationTime,
+          filename: fn
         });
     }
 
