@@ -16,7 +16,7 @@ class RootContainer extends Component {
   }
 
   async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
     if (status === "granted") {
       this.setState({ permissionGranted: true });
@@ -24,7 +24,6 @@ class RootContainer extends Component {
   }
 
   render() {
-
     if (this.state.libraryOpen) {
       return <ImageLibrary />;
     }

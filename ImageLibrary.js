@@ -31,13 +31,18 @@ class ImageLibrary extends Component {
   }
 
   componentDidMount() {
-
     this._isMounted = true;
     this.getPhotos();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  componentDidUpdate() {
+    if (this.state.photos < 1000) {
+      this.getPhotos();
+    }
   }
 
   render() {
@@ -86,21 +91,11 @@ class ImageLibrary extends Component {
     }
 
     if (this._isMounted) {
-      console.log("UPDATING STATE");
-      this.setState({
-        photos: [...this.state.photos, ...photos]
+      this.setState((currentState) => {
+        return { photos: [...currentState.photos, ...photos] };
       });
 
-      // hacky way to call this function recursively :-/
-      if (this.state.photos.length < 1000) {
-        this.done(last);
-      }
     }
-  }
-
-  done(after) {
-    console.log("Done -- get more photos");
-    this.getPhotos(after);
   }
 
   renderHeader = () => {
@@ -112,16 +107,12 @@ class ImageLibrary extends Component {
       <View style={styles.header}>
         <Button
           title="Exit"
-          onPress={() => {
-            this.props.toggleImageBrowser();
-          }}
+          onPress={this.props.toggleImageBrowser}
         />
         <Text>{headerText}</Text>
         <Button
           title="Choose"
-          onPress={() => {
-            this.chooseImages()
-          }}
+          onPress={this.chooseImages}
         />
       </View>
     );
