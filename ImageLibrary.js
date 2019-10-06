@@ -39,12 +39,6 @@ class ImageLibrary extends Component {
     this._isMounted = false;
   }
 
-  componentDidUpdate() {
-    if (this.state.photos < 1000) {
-      this.getPhotos();
-    }
-  }
-
   render() {
     return (
       <View style={styles.container}>
@@ -55,18 +49,13 @@ class ImageLibrary extends Component {
   }
 
   // this is run multiple times to get more photos.
-  async getPhotos(last) {
-
-    // has the "last" photo been passed?
-    if (! last) var last = null;
+  async getPhotos() {
 
     let pics = await MediaLibrary.getAssetsAsync({
-       after: last,
+       after: this.state.after,
        first: 50,
        sortBy: [[ MediaLibrary.SortBy.default, true ]]
     });
-
-    last = pics['endCursor'];
 
     let promises = [];
     for (var i = 0; i < pics['assets'].length; i++) {
@@ -77,22 +66,26 @@ class ImageLibrary extends Component {
 
     let photos = [];
     for (var i = 0; i < promises.length; i++) {
-
-        let identity = a[i].id.substring(0, 36);
-        let fn = identity + ".png";
-
         photos.push({
           id: a[i].id, // "F719041D-8A97-4156-A2D9-E25C6CA263AC/L0/001",
           uri: a[i].uri, // "assets-library://asset/asset.JPG?id=F719041D-8A97-4156-A2D9-E25C6CA263AC&ext=JPG",
           file: a[i].localUri, // "file:///var/mobile/Media/DCIM/116APPLE/IMG_6677.JPG",
-          unix: a[i].creationTime,
-          filename: fn
+          unix: a[i].creationTime
         });
     }
 
     if (this._isMounted) {
       this.setState((currentState) => {
-        return { photos: [...currentState.photos, ...photos] };
+        return {
+          photos: [...currentState.photos, ...photos],
+          after: pics['endCursor']
+        };
+      }, () => {
+        // Repeat until the screen is full of images
+        // then, we will load more photos with getMoreImages below
+        if (this.state.photos.length < 40) {
+          this.getPhotos();
+        }
       });
 
     }
@@ -125,15 +118,24 @@ class ImageLibrary extends Component {
         data={this.state.photos}
         numColumns={4}
         renderItem={this.renderImageTile.bind(this)}
-        keyExtractor={item => item.filename}
+        keyExtractor={(_,index) => index}
         ListEmptyComponent={<Text>Loading...</Text>}
         removeClippedSubviews={true}
-        onEndReachedThreshold={0.5}
         getItemLayout={this.getItemLayout.bind(this)}
         initialNumToRender={24}
         removeClippedSubviews={true}
+        onEndReachedThreshold={1}
+        onEndReached={() => this.getMoreImages()}
       />
     );
+  },
+
+  // this load more images if the user scrolls to the bottom of the image library
+  // and if the image library screen is full
+  getMoreImages() {
+    if (this.state.photos.length > 40) {
+      this.getPhotos();
+    }
   }
 
   renderImageTile({ item, index }){
